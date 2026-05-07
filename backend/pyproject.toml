@@ -31,7 +31,7 @@ dependencies = [
     "requests>=2.32.3,<3.0.0",
     "sqlalchemy-utils>=0.41.2,<1.0.0",
     "sqlalchemy[asyncio]>=2.0.37,<3.0.0",
-    "taraqueue[redis]>=0.3.0",
+    "taraqueue[redis]>=0.4.0",
     "uvicorn[standard]>=0.34.0,<1.0.0",
     "yarl>=1.18.3,<2.0.0",
 ]
