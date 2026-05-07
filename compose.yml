@@ -419,7 +419,7 @@ services:
     restart: always
 
   redis:
-    image: redis:8.6.2-alpine
+    image: redis:8.6.3-alpine
     volumes:
       - ./redis/docker-entrypoint.sh:/docker-entrypoint.sh:Z
       - redis-vol-1:/data/
