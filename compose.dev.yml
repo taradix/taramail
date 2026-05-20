@@ -26,6 +26,11 @@ services:
   memcached:
     command: memcached -vv
 
+  socketmap:
+    volumes:
+      - ./backend/taramail:/app/taramail
+    command: socketmap --log-level debug
+
   unbound:
     healthcheck:
       test: [ "CMD-SHELL", "exit 0" ]

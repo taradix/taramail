@@ -80,6 +80,7 @@ redis = "taramail.store:RedisStore"
 
 [project.scripts]
 netfilter = "taramail.netfilter:main"
+socketmap = "taramail.socketmap:main"
 taramail = "taramail.cli:main"
 
 [project.urls]

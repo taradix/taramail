@@ -482,6 +482,30 @@ services:
     hostname: taramail-rspamd
     stop_grace_period: 30s
 
+  socketmap:
+    build:
+      context: backend
+      args:
+        <<: *python-build-args
+    depends_on:
+      mysql:
+        condition: service_healthy
+    volumes:
+      - mysql-socket-vol-1:/run/mysqld/
+    environment:
+      - DBDRIVER=mysql
+      - DBNAME=${DBNAME}
+      - DBUSER=${DBUSER}
+      - DBPASS=${DBPASS}
+    ports:
+      - '${SOCKETMAP_BIND:-}:${SOCKETMAP_PORT:-10028}:10028'
+    networks:
+      default:
+        aliases:
+          - taramail-socketmap
+    command: socketmap
+    restart: always
+
   sogo:
     build: sogo
     depends_on:

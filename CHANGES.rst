@@ -1,3 +1,10 @@
+Version 0.3.1
+-------------
+
+Released 2026-05-19
+
+-   Add socketmap service for relay domains.
+
 Version 0.3.0
 -------------
 
