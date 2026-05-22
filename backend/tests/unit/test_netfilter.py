@@ -402,6 +402,7 @@ async def test_netfilter_service_watch(memory_queue):
     service = NetfilterService(netfilter, memory_queue)
 
     netfilter.ban.side_effect = lambda _: service.stop_event.set()
+    await memory_queue.subscribe("F2B_CHANNEL")
     await memory_queue.publish(
         "F2B_CHANNEL",
         "mail UI: Invalid password for .+ by 1.2.3.4",
