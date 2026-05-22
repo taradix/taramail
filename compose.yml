@@ -205,7 +205,7 @@ services:
         hard: 40000
 
   memcached:
-    image: memcached:1.6.41-alpine
+    image: memcached:1.6.42-alpine
     networks:
       default:
         aliases:
