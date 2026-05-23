@@ -437,7 +437,7 @@ services:
       - net.core.somaxconn=4096
 
   redis-exporter:
-    image: oliver006/redis_exporter:v1.83.0
+    image: oliver006/redis_exporter:v1.84.0
     depends_on:
       redis:
         condition: service_started
