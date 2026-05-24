@@ -69,6 +69,32 @@ attachments or links.
 
 .. _ClamAV: https://www.clamav.net/
 
+DMARC Processor
+---------------
+
+The DMARC Processor is a periodic worker that receives, parses, and stores
+`DMARC`_ aggregate reports. These reports are sent by external mail providers
+(Gmail, Outlook, etc.) to inform you how your domain's outbound mail performs
+against SPF, DKIM, and DMARC authentication checks.
+
+* **Report Ingestion**
+
+  Connects via IMAP to a dedicated mailbox, fetches unread messages,
+  and extracts XML report attachments (zip, gzip, or plain XML).
+
+* **Structured Storage**
+
+  Parses the DMARC aggregate report XML (RFC 7489) and stores results in
+  MySQL tables (``dmarc_report`` and ``dmarc_record``), enabling SQL queries
+  for forensic analysis.
+
+* **Prometheus Metrics**
+
+  Exposes counters such as ``dmarc_messages_total`` (labeled by domain,
+  result, and disposition) for visualization in Grafana.
+
+.. _DMARC: https://datatracker.ietf.org/doc/html/rfc7489
+
 DockerAPI
 ---------
 

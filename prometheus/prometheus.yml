@@ -125,6 +125,10 @@ scrape_configs:
     static_configs:
       - targets: ['taramail-custom-exporter:80']
 
+  - job_name: 'dmarc'
+    static_configs:
+      - targets: ['taramail-dmarc:9199']
+
   - job_name: 'dockerapi'
     static_configs:
       - targets: ['taramail-dockerapi:80']

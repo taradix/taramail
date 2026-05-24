@@ -49,9 +49,11 @@ SQLModel = declarative_base(cls=ReprMixin)
 @compiles(DateTime, "sqlite")
 def sqlite_datetime(element, compiler, **kw):
     """Replace CURRENT_TIMESTAMP string with function in SQLite server default."""
-    arg = kw["type_expression"].server_default.arg
-    if isinstance(arg, TextClause) and " ON UPDATE " in arg.text:
-        arg.text = re.sub(" ON UPDATE .*", "", arg.text)
+    server_default = kw["type_expression"].server_default
+    if server_default is not None:
+        arg = server_default.arg
+        if isinstance(arg, TextClause) and " ON UPDATE " in arg.text:
+            arg.text = re.sub(" ON UPDATE .*", "", arg.text)
 
     return compiler.visit_datetime(element, **kw)
 
@@ -588,6 +590,50 @@ class UserAclModel(SQLModel):
     pw_reset: Mapped[bool] = mapped_column(server_default="1")
 
     __tablename__ = "user_acl"
+
+
+class DmarcReportModel(SQLModel):
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    report_id: Mapped[str] = mapped_column(String(255))
+    org_name: Mapped[str] = mapped_column(String(255))
+    org_email: Mapped[str] = mapped_column(String(255), server_default="")
+    domain: Mapped[str] = mapped_column(String(255))
+    policy: Mapped[str] = mapped_column(String(20))
+    begin_date: Mapped[dt] = mapped_column(DateTime(timezone=True))
+    end_date: Mapped[dt] = mapped_column(DateTime(timezone=True))
+    created: Mapped[dt] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.current_timestamp(),
+    )
+
+    __tablename__ = "dmarc_report"
+    __table_args__ = (
+        Index("dmarc_report_report_id_key", report_id, unique=True),
+        Index("dmarc_report_domain_key", domain),
+        Index("dmarc_report_begin_date_key", begin_date),
+    )
+
+
+class DmarcRecordModel(SQLModel):
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    report_id: Mapped[int] = mapped_column(ForeignKey("dmarc_report.id", ondelete="CASCADE"))
+    source_ip: Mapped[str] = mapped_column(String(64))
+    count: Mapped[int] = mapped_column(Integer)
+    disposition: Mapped[str] = mapped_column(String(20))
+    dkim_result: Mapped[str] = mapped_column(String(20))
+    spf_result: Mapped[str] = mapped_column(String(20))
+    dmarc_result: Mapped[str] = mapped_column(String(20))
+    header_from: Mapped[str] = mapped_column(String(255))
+    envelope_from: Mapped[str] = mapped_column(String(255), server_default="")
+
+    __tablename__ = "dmarc_record"
+    __table_args__ = (
+        Index("dmarc_record_report_id_key", report_id),
+        Index("dmarc_record_source_ip_key", source_ip),
+        Index("dmarc_record_header_from_key", header_from),
+    )
 
 
 class UserAttributesModel(SQLModel):

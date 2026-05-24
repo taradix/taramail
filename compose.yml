@@ -99,6 +99,38 @@ services:
     command: uvicorn --host=0.0.0.0 --port=80 taramail.exporter:app --log-config=/app/log-config.yaml
     restart: always
 
+  dmarc:
+    build:
+      context: backend
+      args:
+        <<: *python-build-args
+    depends_on:
+      dovecot:
+        condition: service_started
+      mysql:
+        condition: service_healthy
+    volumes:
+      - mysql-socket-vol-1:/run/mysqld/
+    environment:
+      - DBDRIVER=mysql
+      - DBNAME=${DBNAME}
+      - DBUSER=${DBUSER}
+      - DBPASS=${DBPASS}
+      - DMARC_IMAP_HOST=dovecot
+      - DMARC_IMAP_PORT=${DMARC_IMAP_PORT:-993}
+      - DMARC_IMAP_USER=${DMARC_IMAP_USER}
+      - DMARC_IMAP_PASSWORD=${DMARC_IMAP_PASSWORD}
+      - DMARC_POLL_INTERVAL=${DMARC_POLL_INTERVAL:-3600}
+      - DMARC_METRICS_PORT=9199
+    networks:
+      default:
+        aliases:
+          - taramail-dmarc
+    command: dmarc
+    restart: always
+    dns:
+      - ${IPV4_NETWORK:-172.22.1}.254
+
   dockerapi:
     build:
       context: backend
