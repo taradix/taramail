@@ -72,6 +72,7 @@ engine = create_engine(
     DATABASE_URL,
     echo=False,
     future=True,
+    pool_pre_ping=True,
 )
 
 SessionLocal = sessionmaker(
