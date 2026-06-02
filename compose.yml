@@ -245,7 +245,7 @@ services:
     restart: always
 
   mysql:
-    image: mariadb:12.2
+    image: mariadb:12.3
     depends_on:
       unbound:
         condition: service_healthy
