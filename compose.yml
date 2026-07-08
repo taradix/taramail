@@ -32,6 +32,7 @@ services:
       - REDIS_SLAVEOF_PORT=${REDIS_SLAVEOF_PORT:-}
     networks:
       default:
+        ipv4_address: ${IPV4_NETWORK:-172.22.1}.241
         aliases:
           - taramail-api
     command: >
