@@ -274,7 +274,7 @@ services:
     stop_grace_period: 45s
 
   mysqld-exporter:
-    image: prom/mysqld-exporter:v0.19.0
+    image: prom/mysqld-exporter:v0.20.0
     depends_on:
       mysql:
         condition: service_healthy
