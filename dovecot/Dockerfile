@@ -1,7 +1,7 @@
 FROM alpine:3.24
 
 # renovate: datasource=github-releases depName=tianon/gosu versioning=semver-coerced extractVersion=^(?<version>.*)$
-ARG GOSU_VERSION=1.19
+ARG GOSU_VERSION=1.20
 
 ENV LANG=C.UTF-8
 ENV LC_ALL=C.UTF-8
