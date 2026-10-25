@@ -5,7 +5,7 @@ ARG DEBIAN_RELEASE
 ARG DEBIAN_FRONTEND=noninteractive
 ARG SOGO_DEBIAN_REPOSITORY=http://www.axis.cz/linux/debian
 # renovate: datasource=github-releases depName=tianon/gosu versioning=semver-coerced extractVersion=^(?<version>.*)$
-ARG GOSU_VERSION=1.19
+ARG GOSU_VERSION=1.20
 ENV LC_ALL=C
 
 # Prerequisites
