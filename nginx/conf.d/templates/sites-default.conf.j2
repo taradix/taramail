@@ -76,6 +76,13 @@ location ^~ /principals {
 }
 
 location /api/ {
+    # The API has no auth yet; only the server's own networks may use it.
+    allow 10.0.0.0/8;
+    allow 172.16.0.0/12;
+    allow 192.168.0.0/16;
+    allow fc00::/7;
+    deny all;
+
     proxy_pass       http://taramail-api;
     proxy_set_header Host      $http_host;
     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
