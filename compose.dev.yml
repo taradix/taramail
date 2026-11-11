@@ -7,7 +7,7 @@ services:
       - ./backend/taramail:/app/taramail
       - ./backend/alembic:/app/alembic
     command: >
-      sh -c "alembic upgrade head && exec uvicorn --host=0.0.0.0 --port=80 taramail.api:app --log-config=/app/log-config.dev.yaml --reload"
+      sh -c "alembic upgrade head && python -m taramail.sogo && exec uvicorn --host=0.0.0.0 --port=80 taramail.api:app --log-config=/app/log-config.dev.yaml --reload"
 
   custom-exporter:
     volumes:
