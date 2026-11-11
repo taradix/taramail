@@ -111,7 +111,10 @@ def add_body_args(command_parser, content_schema, required_fields):
         arg_type = get_arg_type(prop_details.get("type"))
 
         kwargs = {}
-        if arg_type is bool:
+        types = [prop_details.get("type")] + [s.get("type") for s in prop_details.get("anyOf", [])]
+        if "array" in types:
+            kwargs["nargs"] = "*"
+        elif arg_type is bool:
             if arg_default:
                 arg_name = arg_name.replace(prop_name, f"no_{prop_name}")
                 kwargs["action"] = "store_false"

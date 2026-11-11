@@ -69,6 +69,34 @@ def test_add_command_args():
     assert args.command == "get_test"
 
 
+@pytest.mark.parametrize(
+    "argv, expected",
+    [
+        (["--sender-acl", "a@b.c", "@d.e"], ["a@b.c", "@d.e"]),
+        (["--sender-acl"], []),
+        ([], None),
+    ],
+)
+def test_add_command_args_array(argv, expected):
+    """Array properties in the request body should parse as lists."""
+    parser = make_args_parser()
+    parser = add_command_args(parser, {
+        "paths": {
+            "test": {
+                "put": {
+                    "requestBody": {"content": {"application/json": {"schema": {
+                        "properties": {
+                            "sender_acl": {"anyOf": [{"type": "array", "items": {"type": "string"}}, {"type": "null"}]},
+                        },
+                    }}}},
+                },
+            },
+        },
+    })
+    args = parser.parse_args(["put_test", *argv])
+    assert args.sender_acl == expected
+
+
 def test_add_command_args_error(capsys):
     """Adding empty command args should raise on unknown commands."""
     parser = make_args_parser()
