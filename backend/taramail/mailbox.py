@@ -6,6 +6,8 @@ from pydantic import (
     BaseModel,
     EmailStr,
     Field,
+    TypeAdapter,
+    ValidationError,
     ValidationInfo,
     field_validator,
 )
@@ -18,8 +20,9 @@ from sqlalchemy.exc import NoResultFound
 from sqlalchemy.sql import func
 
 from taramail.db import DBSession
-from taramail.email import join_email
+from taramail.email import is_email, join_email
 from taramail.models import (
+    AliasDomainModel,
     AliasModel,
     BccMapsModel,
     DomainModel,
@@ -133,6 +136,8 @@ class MailboxDetails(BaseModel):
     last_smtp_login: dt | None
     last_pop3_login: dt | None
     last_sso_login: dt | None
+    sender_acl: list[str]
+    extended_sender_acl: list[str]
 
 
 class MailboxUpdate(BaseModel):
@@ -153,6 +158,8 @@ class MailboxUpdate(BaseModel):
     pop3_access: bool | None = None
     smtp_access: bool | None = None
     sieve_access: bool | None = None
+    sender_acl: list[str] | None = None
+    extended_sender_acl: list[str] | None = None
 
 
 @define(frozen=True)
@@ -211,6 +218,8 @@ class MailboxManager:
             last_smtp_login=last_logins.get("smtp"),
             last_pop3_login=last_logins.get("pop3"),
             last_sso_login=last_logins.get("SSO"),
+            sender_acl=self._get_sender_acl(username, external=False),
+            extended_sender_acl=self._get_sender_acl(username, external=True),
         )
 
     def get_mailboxes(self) -> list[MailboxModel]:
@@ -374,6 +383,8 @@ class MailboxManager:
             if value is not None and hasattr(attributes, key):
                 setattr(attributes, key, value)
 
+        self._update_sender_acl(username, mailbox_update)
+
         # TODO: recovery email?
 
         self.sogo.update_static_view(username)
@@ -411,6 +422,91 @@ class MailboxManager:
         self.store.hdel("RL_VALUE", username)
 
         # TODO: oauth
+
+    def _get_sender_acl(self, username: EmailStr, external: bool) -> list[str]:
+        return list(self.db.scalars(
+            select(SenderAclModel.send_as)
+            .where(
+                SenderAclModel.logged_in_as == username,
+                SenderAclModel.external == external,
+            )
+        ).all())
+
+    def _update_sender_acl(self, username: EmailStr, mailbox_update: MailboxUpdate) -> None:
+        if mailbox_update.sender_acl is not None:
+            send_as = self._validate_sender_acl(username, mailbox_update.sender_acl)
+            self._set_sender_acl(username, send_as, external=False)
+
+        if mailbox_update.extended_sender_acl is not None:
+            send_as = self._validate_extended_sender_acl(mailbox_update.extended_sender_acl)
+            self._set_sender_acl(username, send_as, external=True)
+
+    def _set_sender_acl(self, username: EmailStr, send_as: list[str], external: bool) -> None:
+        self.db.execute(
+            delete(SenderAclModel)
+            .where(
+                SenderAclModel.logged_in_as == username,
+                SenderAclModel.external == external,
+            )
+        )
+        self.db.add_all([
+            SenderAclModel(logged_in_as=username, send_as=s, external=external)
+            for s in dict.fromkeys(send_as)
+        ])
+        # Flush so a later delete in the same transaction sees these rows.
+        self.db.flush()
+
+    def _validate_sender_acl(self, username: EmailStr, sender_acl: list[str]) -> list[str]:
+        # Like mailcow, "default" alone resets the list and "*" supersedes everything.
+        sender_acl = [s.strip() for s in sender_acl if s.strip() != "default"]
+        if "*" in sender_acl:
+            return ["*"]
+
+        local_domains = self._get_local_domains()
+        # Aliases already pointing to the mailbox are allowed by Postfix without an ACL.
+        fixed_aliases = self.db.scalars(
+            select(AliasModel.address)
+            .where(AliasModel.goto.op("REGEXP")(f"(^|,){re.escape(username)}($|,)"))
+        ).all()
+        send_as = []
+        for value in sender_acl:
+            if is_email(value):
+                alias_domain = self.db.scalar(select(AliasModel.domain).where(AliasModel.address == value))
+                if alias_domain not in local_domains:
+                    raise MailboxValidationError(f"Sender ACL value {value} is invalid")
+                if value not in fixed_aliases:
+                    send_as.append(value)
+            elif (domain := value.lstrip("@").lower()) in local_domains:
+                send_as.append(f"@{domain}")
+            else:
+                raise MailboxValidationError(f"Sender ACL value {value} is invalid")
+
+        return send_as
+
+    def _validate_extended_sender_acl(self, extended_sender_acl: list[str]) -> list[str]:
+        local_domains = self._get_local_domains()
+        send_as = []
+        for value in filter(None, map(str.strip, extended_sender_acl)):
+            if is_email(value):
+                domain = value.rsplit("@", 1)[1].lower()
+            else:
+                try:
+                    domain = TypeAdapter(DomainStr).validate_python(value.lstrip("@"))
+                except ValidationError as e:
+                    raise MailboxValidationError(f'External sender address "{value}" is invalid') from e
+
+            if domain in local_domains:
+                raise MailboxValidationError(f'External sender "{value}" uses an invalid domain')
+
+            send_as.append(value if is_email(value) else f"@{domain}")
+
+        return send_as
+
+    def _get_local_domains(self) -> set[str]:
+        return set(self.db.scalars(
+            select(DomainModel.domain)
+            .union(select(AliasDomainModel.alias_domain))
+        ).all())
 
     def _get_hashed_password(self, password1: str, password2: str) -> str:
         password_policy = self.password_policy_manager.get_policy()

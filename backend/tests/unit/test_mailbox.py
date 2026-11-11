@@ -15,6 +15,7 @@ from taramail.mailbox import (
     MailboxCreate,
     MailboxNotFoundError,
     MailboxUpdate,
+    MailboxValidationError,
 )
 
 
@@ -112,6 +113,99 @@ def test_mailbox_manager_update_mailbox_attributes(domain, mailbox_manager, uniq
     mailbox_manager.update_mailbox(mailbox.username, mailbox_update)
     result = mailbox_manager.get_mailbox_details(mailbox.username)
     assert result.sogo_access is False
+
+
+@pytest.fixture
+def username(domain, mailbox_manager, unique):
+    """Return the username for a managed mailbox."""
+    password = unique("password")
+    mailbox_create = MailboxCreate(
+        local_part=unique("text"),
+        domain=domain,
+        password=password,
+        password2=password,
+    )
+    mailbox = mailbox_manager.create_mailbox(mailbox_create)
+    mailbox_manager.db.flush()
+
+    return mailbox.username
+
+
+def test_mailbox_manager_update_sender_acl_null_alias(domain, username, alias_manager, mailbox_manager, unique):
+    """A mailbox should be allowed to send as an alias that discards mail."""
+    address = unique("email", domain=domain)
+    alias_manager.create_alias(AliasCreate(address=address, goto_null=True))
+    alias_manager.db.flush()
+
+    mailbox_manager.update_mailbox(username, MailboxUpdate(sender_acl=[address]))
+    result = mailbox_manager.get_mailbox_details(username)
+    assert result.sender_acl == [address]
+    assert alias_manager.get_alias(address).goto == "null@localhost"
+
+
+@pytest.mark.parametrize("sender_acl, expected", [
+    (["*", "@invalid"], ["*"]),
+    (["default"], []),
+    ([], []),
+])
+def test_mailbox_manager_update_sender_acl_special(sender_acl, expected, username, mailbox_manager):
+    """Like mailcow, "*" should supersede everything and "default" should reset."""
+    mailbox_manager.update_mailbox(username, MailboxUpdate(sender_acl=["*"]))
+    mailbox_manager.update_mailbox(username, MailboxUpdate(sender_acl=sender_acl))
+    result = mailbox_manager.get_mailbox_details(username)
+    assert result.sender_acl == expected
+
+
+def test_mailbox_manager_update_sender_acl_domain(domain, username, mailbox_manager):
+    """A domain should be stored with a leading @ and replace the previous list."""
+    mailbox_manager.update_mailbox(username, MailboxUpdate(sender_acl=["*"]))
+    mailbox_manager.update_mailbox(username, MailboxUpdate(sender_acl=["default", domain]))
+    result = mailbox_manager.get_mailbox_details(username)
+    assert result.sender_acl == [f"@{domain}"]
+
+
+def test_mailbox_manager_update_sender_acl_fixed_alias(domain, username, alias_manager, mailbox_manager, unique):
+    """An alias already pointing to the mailbox should not need a sender ACL."""
+    address = unique("email", domain=domain)
+    alias_manager.create_alias(AliasCreate(address=address, goto=username))
+    alias_manager.db.flush()
+
+    mailbox_manager.update_mailbox(username, MailboxUpdate(sender_acl=[address]))
+    result = mailbox_manager.get_mailbox_details(username)
+    assert result.sender_acl == []
+
+
+@pytest.mark.parametrize("value", [
+    "unknown@example.com",
+    "@example.com",
+    "not a domain",
+])
+def test_mailbox_manager_update_sender_acl_invalid(value, username, mailbox_manager):
+    """Unknown addresses and non-local domains should be rejected."""
+    with pytest.raises(MailboxValidationError):
+        mailbox_manager.update_mailbox(username, MailboxUpdate(sender_acl=[value]))
+
+
+def test_mailbox_manager_update_extended_sender_acl(username, mailbox_manager, unique):
+    """External addresses and domains should be stored as external."""
+    email = unique("email", domain="example.com")
+    mailbox_update = MailboxUpdate(extended_sender_acl=[email, "example.org", ""])
+    mailbox_manager.update_mailbox(username, mailbox_update)
+    result = mailbox_manager.get_mailbox_details(username)
+    assert result.extended_sender_acl == [email, "@example.org"]
+    assert result.sender_acl == []
+
+
+@pytest.mark.parametrize("make_value", [
+    lambda domain: f"someone@{domain}",
+    lambda domain: f"@{domain}",
+    lambda domain: "not a domain",
+])
+def test_mailbox_manager_update_extended_sender_acl_invalid(make_value, domain, username, mailbox_manager):
+    """Local domains and invalid values should be rejected as external senders."""
+    mailbox_update = MailboxUpdate(extended_sender_acl=[make_value(domain)])
+    with pytest.raises(MailboxValidationError):
+        mailbox_manager.update_mailbox(username, mailbox_update)
 
 
 def test_mailox_manager_delete_mailbox(domain, alias_manager, mailbox_manager, unique):
