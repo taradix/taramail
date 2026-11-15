@@ -461,8 +461,7 @@ def put_rspamd_map(map_name: str, update: RspamdMapUpdate, maps: RspamdMapsDep) 
 
 @app.api_route("/rspamd/settings", methods=["GET", "HEAD"], include_in_schema=False)
 def get_rspamd_settings(request: Request, settings: RspamdSettingsDep) -> Response:
-    return templates.TemplateResponse("rspamd_settings.j2", {
-        "request": request,
+    return templates.TemplateResponse(request, "rspamd_settings.j2", {
         "allowed_domains_regex": settings.get_allowed_domains_regex(),
         "internal_aliases": settings.get_internal_aliases(),
         "custom_scores": settings.get_custom_scores(),
