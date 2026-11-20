@@ -59,7 +59,7 @@ services:
     restart: always
 
   clamd:
-    image: clamav/clamav:1.5.4
+    image: clamav/clamav:1.5.5
     depends_on:
       unbound:
         condition: service_healthy
