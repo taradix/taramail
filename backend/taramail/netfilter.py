@@ -19,13 +19,13 @@ import dns.resolver
 from attrs import define, field
 from more_itertools import partition
 from nftables import Nftables
-from taraqueue.redis import RedisQueue
-
-from taramail.logger import (
+from taralog import (
     LoggerHandlerAction,
     LoggerLevelAction,
     setup_logger,
 )
+from taraqueue.redis import RedisQueue
+
 from taramail.store import (
     RedisStore,
 )

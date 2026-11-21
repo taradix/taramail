@@ -116,14 +116,6 @@ taramail.http module
    :show-inheritance:
    :undoc-members:
 
-taramail.logger module
-----------------------
-
-.. automodule:: taramail.logger
-   :members:
-   :show-inheritance:
-   :undoc-members:
-
 taramail.mailbox module
 -----------------------
 

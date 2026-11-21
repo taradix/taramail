@@ -1,6 +1,5 @@
 """Testing fixtures."""
 
-import logging
 import os
 from unittest.mock import patch
 
@@ -15,8 +14,6 @@ from taramail.deps import (
     get_store,
 )
 from taramail.exporter import app as _exporter_app
-from taramail.logger import setup_logger
-from taramail.testing.logger import LoggerHandler
 
 
 @pytest.fixture
@@ -50,14 +47,3 @@ def exporter_app(db_session):
 
     with patch.dict(os.environ, env), TestClient(_exporter_app) as client:
         yield client
-
-
-@pytest.fixture(autouse=True)
-def logger_handler():
-    """Logger handler fixture."""
-    handler = LoggerHandler()
-    setup_logger(logging.DEBUG, handler)
-    try:
-        yield handler
-    finally:
-        setup_logger()

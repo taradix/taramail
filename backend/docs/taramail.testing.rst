@@ -36,14 +36,6 @@ taramail.testing.fixtures module
    :show-inheritance:
    :undoc-members:
 
-taramail.testing.logger module
-------------------------------
-
-.. automodule:: taramail.testing.logger
-   :members:
-   :show-inheritance:
-   :undoc-members:
-
 taramail.testing.managers module
 --------------------------------
 

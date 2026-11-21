@@ -13,9 +13,9 @@ import sys
 from argparse import ArgumentParser
 
 from sqlalchemy import select
+from taralog import LoggerHandlerAction, LoggerLevelAction, setup_logger
 
 from taramail.db import get_db_session
-from taramail.logger import LoggerHandlerAction, LoggerLevelAction, setup_logger
 from taramail.models import DomainModel
 
 logger = logging.getLogger(__name__)

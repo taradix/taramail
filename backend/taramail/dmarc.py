@@ -26,9 +26,9 @@ from prometheus_client import (
     start_http_server,
 )
 from sqlalchemy.exc import IntegrityError
+from taralog import LoggerHandlerAction, LoggerLevelAction, setup_logger
 
 from taramail.db import get_db_session
-from taramail.logger import LoggerHandlerAction, LoggerLevelAction, setup_logger
 from taramail.models import DmarcRecordModel, DmarcReportModel
 
 logger = logging.getLogger(__name__)
