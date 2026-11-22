@@ -2,21 +2,15 @@
 
 import sys
 from functools import partial
-from pathlib import Path
 
 import pytest
+from pytest_xdocker.compose import ComposeServer, find_compose_files
 
 from taramail.http import HTTPSession
-from taramail.testing.compose import ComposeServer
 
 
 @pytest.fixture(scope="session")
-def project():
-    return "test"
-
-
-@pytest.fixture(scope="session")
-def env_vars(project):
+def env_vars():
     """Environment variables for the services.
 
     Static because they are persisted in volumes, e.g. mysql-vol-1.
@@ -25,7 +19,6 @@ def env_vars(project):
     python_version = f"{v.major}.{v.minor}.{v.micro}"
 
     return {
-        "COMPOSE_PROJECT_NAME": project,
         "DBDRIVER": "mysql",
         "DBNAME": "test",
         "DBUSER": "test",
@@ -54,30 +47,11 @@ def env_file(env_vars, request):
 
 
 @pytest.fixture(scope="session")
-def compose_files(request):
-    directory = Path(request.config.rootdir)
-    filenames = ["docker-compose.yml", "compose.yaml", "compose.yml"]
-    while True:
-        for filename in filenames:
-            path = directory / filename
-            if path.exists():
-                all_files = directory.glob(f"{path.stem}.*")
-                ordered_files = sorted(all_files, key=lambda p: len(p.name))
-                return list(ordered_files)
-
-        if directory == directory.parent:
-            raise FileNotFoundError("Docker compose file not found")
-
-        directory = directory.parent
-
-
-@pytest.fixture(scope="session")
-def compose_server(project, env_file, compose_files, process):
+def compose_server(env_file, request, process):
     return partial(
         ComposeServer,
-        project=project,
         env_file=env_file,
-        compose_files=compose_files,
+        compose_files=find_compose_files(request.config.rootdir),
         process=process,
     )
 
