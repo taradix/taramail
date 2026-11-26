@@ -183,3 +183,11 @@ def unbound_service(compose_server):
     server = compose_server("start of service")
     with server.run("unbound") as service:
         yield service
+
+
+@pytest.fixture(scope="session")
+def nginx_service(compose_server):
+    """Nginx service fixture."""
+    server = compose_server("start worker process")
+    with server.run("nginx") as service:
+        yield service
