@@ -9,7 +9,7 @@ from hamcrest import (
 
 def test_blackbox_exporter_redis_check(blackbox_exporter, redis_service):
     """The blackbox exporter should be ale to probe the api service."""
-    target = f"{redis_service.ip}:{redis_service.container.exposed_port}"
+    target = f"{redis_service.ip}:{redis_service.exposed_port}"
     metrics = blackbox_exporter.get_metrics("/probe", params={
         "module": "redis_check",
         "target": target,

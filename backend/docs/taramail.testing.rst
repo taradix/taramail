@@ -4,14 +4,6 @@ taramail.testing package
 Submodules
 ----------
 
-taramail.testing.compose module
--------------------------------
-
-.. automodule:: taramail.testing.compose
-   :members:
-   :show-inheritance:
-   :undoc-members:
-
 taramail.testing.db module
 --------------------------
 

@@ -1,5 +1,5 @@
 version = 1
-revision = 5
+revision = 3
 requires-python = ">=3.13, <4.0"
 
 [[package]]
@@ -1689,7 +1689,7 @@ wheels = [
 
 [[package]]
 name = "pytest-xdocker"
-version = "0.3.1"
+version = "0.4.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "attrs" },
@@ -1700,9 +1700,9 @@ dependencies = [
     { name = "pytest-cache" },
     { name = "pytest-xprocess" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/61/13/bb55d08ec24283d11051acfd2f57f7e26a130b86a1cc3977e29429fa4813/pytest_xdocker-0.3.1.tar.gz", hash = "sha256:8196ee96fd8900276e0c52a7666d946508a3599e1f2203123680da40fd521af0", size = 105115, upload-time = "2026-11-23T01:50:05.032Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/6f/d1/b25b13bd200e060cc984d1dfab0a606b858d1535b6be018002e7a778913e/pytest_xdocker-0.4.0.tar.gz", hash = "sha256:7c4f7c20e2f4104a21f83f8ba8bcb2d803b525d0aa977608ae31e24d29a43fe6", size = 105956, upload-time = "2026-11-26T20:36:44.626Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/94/ee/347d8059de2590065890d68a348b9bdb4ba2963c83b24e673637ad68119a/pytest_xdocker-0.3.1-py3-none-any.whl", hash = "sha256:130667239588f877e92db16d5ab95ba06f648189e0e156123b2b5b0a9535fb7f", size = 21796, upload-time = "2026-11-23T01:50:03.833Z" },
+    { url = "https://files.pythonhosted.org/packages/c9/e3/87b9f936f861fa20e26d23de5b7eec3075941c4d342141420809c744304b/pytest_xdocker-0.4.0-py3-none-any.whl", hash = "sha256:8cf8e8c262e2e2bf304e83fcd8336c4cd115935493cdec76b1bf560cd42bb07b", size = 21881, upload-time = "2026-11-26T20:36:43.764Z" },
 ]
 
 [[package]]
@@ -2137,7 +2137,7 @@ requires-dist = [
     { name = "pytest", marker = "extra == 'test'", specifier = ">=9.0.0,<10.0.0" },
     { name = "pytest-asyncio", marker = "extra == 'test'", specifier = ">=1.0.0,<2.0.0" },
     { name = "pytest-unique", marker = "extra == 'test'", specifier = ">=0.1.8,<1.0.0" },
-    { name = "pytest-xdocker", marker = "extra == 'test'", specifier = ">=0.2.8,<1.0.0" },
+    { name = "pytest-xdocker", marker = "extra == 'test'", specifier = ">=0.4.0,<1.0.0" },
     { name = "redis", specifier = ">=8.2.0,<8.3.0" },
     { name = "redis", marker = "extra == 'test'", specifier = ">=8.2.0,<8.3.0" },
     { name = "requests", specifier = ">=2.32.3,<3.0.0" },
@@ -2148,7 +2148,7 @@ requires-dist = [
     { name = "sqlalchemy", extras = ["asyncio"], specifier = ">=2.0.37,<3.0.0" },
     { name = "sqlalchemy-utils", specifier = ">=0.41.2,<1.0.0" },
     { name = "taralog", specifier = ">=0.1.0,<1.0.0" },
-    { name = "taraqueue", extras = ["redis"], specifier = ">=0.6.2,<1.0.0" },
+    { name = "taraqueue", extras = ["redis"], specifier = ">=0.6.3,<1.0.0" },
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.34.0,<1.0.0" },
     { name = "yarl", specifier = ">=1.18.3,<2.0.0" },
 ]
@@ -2156,14 +2156,14 @@ provides-extras = ["test", "check", "docs"]
 
 [[package]]
 name = "taraqueue"
-version = "0.6.2"
+version = "0.6.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "yarl" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/ee/bd/848a8c858b4ae39b9bf2c5b0ad561373ec294ea55565c03c3c59c0418dd4/taraqueue-0.6.2.tar.gz", hash = "sha256:32de2795f8b6fc81018a9125b68717df3b817bb59ca2d76828581e2ff7335a39", size = 151223, upload-time = "2026-05-22T21:24:29.372Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/fc/34/3250a645482546a25366ff889906e5714a7c8b98f78a90f85b744d0ad08c/taraqueue-0.6.3.tar.gz", hash = "sha256:2ce5fc0ed98fda8add76a246b1ced5fb0823d78807dcf1e8e31aaf06e0393003", size = 197790, upload-time = "2026-11-26T21:22:51.028Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/ba/85/d4e4bde04258c6d17d04510001a4aefead8e92003fae91486585f54cdf6a/taraqueue-0.6.2-py3-none-any.whl", hash = "sha256:b8941c6d2994becc153084be78c1a3ad0c04f6e6a1dbb53cac639d8ded0dd3fe", size = 11025, upload-time = "2026-05-22T21:24:28.495Z" },
+    { url = "https://files.pythonhosted.org/packages/2f/17/c0798c9145e8d96ac4134117c96d4e0ae36b07c60e9b1e27bce17fde5c61/taraqueue-0.6.3-py3-none-any.whl", hash = "sha256:8190c51ce0293234feeb07554292f1d2508e988a675cf742dc9e5033eb858158", size = 9616, upload-time = "2026-11-26T21:22:50.171Z" },
 ]
 
 [package.optional-dependencies]
