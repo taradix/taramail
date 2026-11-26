@@ -3,10 +3,10 @@
 import pytest
 from attrs import define
 from prometheus_client.parser import text_string_to_metric_families
+from pytest_xdocker.docker import DockerContainer
 from yarl import URL
 
 from taramail.http import HTTPSession
-from taramail.testing.compose import ComposeService
 
 
 @define
@@ -16,9 +16,9 @@ class Exporter:
     port: int
 
     @classmethod
-    def from_service(cls, service: ComposeService) -> "Exporter":
+    def from_service(cls, service: DockerContainer) -> "Exporter":
         host = service.ip
-        port = service.container.exposed_port
+        port = service.exposed_port
         return cls(host, port)
 
     @property
