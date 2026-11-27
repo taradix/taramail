@@ -326,8 +326,6 @@ services:
       - backend-docs:/usr/share/nginx/html/docs:ro
       - certbot-www:/web:ro,z
       - certbot-certs:/etc/letsencrypt:ro,z
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro,z
-      - ./nginx/includes/:/etc/nginx/includes/:ro,z
       - ./nginx/conf.d/:/etc/nginx/conf.d/:ro,z
       - sogo-web-vol-1:/usr/lib/GNUstep/SOGo/
     ports:
