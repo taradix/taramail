@@ -191,3 +191,11 @@ def nginx_service(compose_server):
     server = compose_server("start worker process")
     with server.run("nginx") as service:
         yield service
+
+
+@pytest.fixture(scope="session")
+def nginx_session(nginx_service):
+    """Nginx HTTP session to the service fixture, over the self-signed dev cert."""
+    session = HTTPSession(f"https://{nginx_service.ip}/")
+    session.verify = False
+    return session
