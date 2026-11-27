@@ -1,5 +1,7 @@
 """Integration tests for the nginx service."""
 
+from hamcrest import assert_that, has_entries, has_properties
+
 from taramail.http import HTTPSession
 
 
@@ -8,8 +10,10 @@ def test_nginx_redirects_http_to_https(nginx_service):
     http_session = HTTPSession(f"http://{nginx_service.ip}/")
     response = http_session.get("/SOGo", allow_redirects=False)
 
-    assert response.status_code == 301
-    assert response.headers["location"] == f"https://{nginx_service.ip}/SOGo"
+    assert_that(response, has_properties(
+        status_code=301,
+        headers=has_entries(location=f"https://{nginx_service.ip}/SOGo"),
+    ))
 
 
 def test_nginx_redirects_root_to_sogo(nginx_service):
@@ -17,5 +21,7 @@ def test_nginx_redirects_root_to_sogo(nginx_service):
     http_session = HTTPSession(f"https://{nginx_service.ip}/")
     response = http_session.get("/", allow_redirects=False, verify=False)
 
-    assert response.status_code == 301
-    assert response.headers["location"] == f"https://{nginx_service.ip}/SOGo"
+    assert_that(response, has_properties(
+        status_code=301,
+        headers=has_entries(location=f"https://{nginx_service.ip}/SOGo"),
+    ))
