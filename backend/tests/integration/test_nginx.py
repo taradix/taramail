@@ -14,8 +14,8 @@ def test_nginx_redirects_http_to_https(nginx_service):
 
 def test_nginx_redirects_root_to_sogo(nginx_service):
     """The nginx service should redirect the root to SOGo, over the self-signed dev cert."""
-    http_session = HTTPSession(f"https://{nginx_service.ip}/", verify=False)
-    response = http_session.get("/", allow_redirects=False)
+    http_session = HTTPSession(f"https://{nginx_service.ip}/")
+    response = http_session.get("/", allow_redirects=False, verify=False)
 
     assert response.status_code == 301
     assert response.headers["location"] == f"https://{nginx_service.ip}/SOGo"
