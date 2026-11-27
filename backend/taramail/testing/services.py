@@ -10,12 +10,7 @@ from taramail.http import HTTPSession
 
 
 @pytest.fixture(scope="session")
-def project():
-    return "test"
-
-
-@pytest.fixture(scope="session")
-def env_vars(project):
+def env_vars():
     """Environment variables for the services.
 
     Static because they are persisted in volumes, e.g. mysql-vol-1.
@@ -24,7 +19,6 @@ def env_vars(project):
     python_version = f"{v.major}.{v.minor}.{v.micro}"
 
     return {
-        "COMPOSE_PROJECT_NAME": project,
         "DBDRIVER": "mysql",
         "DBNAME": "test",
         "DBUSER": "test",
@@ -53,10 +47,9 @@ def env_file(env_vars, request):
 
 
 @pytest.fixture(scope="session")
-def compose_server(project, env_file, process, request):
+def compose_server(env_file, process, request):
     return partial(
         ComposeServer,
-        project=project,
         env_file=env_file,
         compose_files=find_compose_files(request.config.rootdir),
         process=process,
@@ -183,3 +176,19 @@ def unbound_service(compose_server):
     server = compose_server("start of service")
     with server.run("unbound") as service:
         yield service
+
+
+@pytest.fixture(scope="session")
+def nginx_service(compose_server):
+    """Nginx service fixture."""
+    server = compose_server("start worker process")
+    with server.run("nginx") as service:
+        yield service
+
+
+@pytest.fixture(scope="session")
+def nginx_session(nginx_service):
+    """Nginx HTTP session to the service fixture, over the self-signed dev cert."""
+    session = HTTPSession(f"https://{nginx_service.ip}/")
+    session.verify = False
+    return session

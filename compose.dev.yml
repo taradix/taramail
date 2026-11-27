@@ -1,4 +1,4 @@
-name: taramail
+name: taramail-test
 include:
   - path: ./taracert/compose.dev.yml
 services:
