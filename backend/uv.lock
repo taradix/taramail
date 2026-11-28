@@ -2148,7 +2148,7 @@ requires-dist = [
     { name = "sqlalchemy", extras = ["asyncio"], specifier = ">=2.0.37,<3.0.0" },
     { name = "sqlalchemy-utils", specifier = ">=0.41.2,<1.0.0" },
     { name = "taralog", specifier = ">=0.1.0,<1.0.0" },
-    { name = "taraqueue", extras = ["redis"], specifier = ">=0.6.3,<1.0.0" },
+    { name = "taraqueue", extras = ["redis"], specifier = ">=0.6.4,<1.0.0" },
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.34.0,<1.0.0" },
     { name = "yarl", specifier = ">=1.18.3,<2.0.0" },
 ]
@@ -2156,14 +2156,14 @@ provides-extras = ["test", "check", "docs"]
 
 [[package]]
 name = "taraqueue"
-version = "0.6.3"
+version = "0.6.4"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "yarl" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/fc/34/3250a645482546a25366ff889906e5714a7c8b98f78a90f85b744d0ad08c/taraqueue-0.6.3.tar.gz", hash = "sha256:2ce5fc0ed98fda8add76a246b1ced5fb0823d78807dcf1e8e31aaf06e0393003", size = 197790, upload-time = "2026-11-26T21:22:51.028Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/15/93/5c29ebf2038b16bc7fb3a319cb65e2cc9532edaf2aae3f5e866cf4f952a6/taraqueue-0.6.4.tar.gz", hash = "sha256:612b5ba5551e4779c47a833756ae51b419e0aa11356a45b127dc452afb5d9fb1", size = 197842, upload-time = "2026-11-28T01:24:00.831Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/2f/17/c0798c9145e8d96ac4134117c96d4e0ae36b07c60e9b1e27bce17fde5c61/taraqueue-0.6.3-py3-none-any.whl", hash = "sha256:8190c51ce0293234feeb07554292f1d2508e988a675cf742dc9e5033eb858158", size = 9616, upload-time = "2026-11-26T21:22:50.171Z" },
+    { url = "https://files.pythonhosted.org/packages/a1/a8/1b5679e0868ebe660570374d4eebc7d7d31c662ded1541f85c75e639e675/taraqueue-0.6.4-py3-none-any.whl", hash = "sha256:460b84327caf4a0d92fb8474febdcbd758dac349d7d289f4bbf36fd3744f9eba", size = 9595, upload-time = "2026-11-28T01:24:00.096Z" },
 ]
 
 [package.optional-dependencies]
