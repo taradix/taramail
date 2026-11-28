@@ -310,7 +310,7 @@ services:
     stop_grace_period: 30s
 
   nginx:
-    image: nginx:1.29.4-alpine
+    image: nginx:1.31.10-alpine
     depends_on:
       api:
         condition: service_healthy
